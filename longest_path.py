@@ -11,22 +11,27 @@ def read_input():
         with open(file) as fh:
             for i in range(0, int(fh.readline())):
                 first_line = [int(i) for i in fh.readline().split()]
-                width = first_line[1]
-                text = [fh.readline()[0:-1] for i in range(0, first_line[0])]
-                input.append((width, text))
+                n = first_line[0]
+                v_in = [list() for i in range(0, n)]
+                v_out = [list() for i in range(0, n)]
+                next_line = [int(i) for i in fh.readline().split()]
+                for i in range(0, 2 * first_line[1], 2):
+                    v_in[next_line[i + 1]].append(next_line[i])
+                    v_out[next_line[i]].append(next_line[i + 1])
+                input.append((v_in, v_out))
         inputs.append(input)
     return inputs
 
 
-def line_breaks(input):
-    """calculates the minimal line break penalty for a text"""
-    width = input[0]
-    text = input[1]
-    return 42
+def find_longest_path(input):
+    """finds the longest path in a directed acyclic graph"""
+    n = input[0]  # number of edges
+    v_in = input[1]  # for each vertex a list with all incoming edges
+    v_out = input[2]  # for each vertex a list with all outgoing edges
 
 
 # path to the local test files
-path = "testdata/DnA-line-breaks/"
+path = "testdata/DnA-longest-path/"
 input_files = [os.path.join(path, file) for file in os.listdir(path) if file.endswith(".input")]
 output_files = [os.path.join(path, file) for file in os.listdir(path) if file.endswith(".output")]
 input_files.sort()
@@ -37,7 +42,7 @@ inputs = read_input()
 start_time = process_time()
 outputs = list()
 for input in inputs:
-    outputs.append([line_breaks(case) for case in input])
+    outputs.append([find_longest_path(case) for case in input])
 end_time = process_time()
 
 judge.run(output_files, outputs, end_time - start_time)

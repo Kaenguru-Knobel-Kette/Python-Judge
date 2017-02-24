@@ -18,7 +18,7 @@ def read_input():
                 for i in range(0, 2 * first_line[1], 2):
                     v_in[next_line[i + 1]].append(next_line[i])
                     v_out[next_line[i]].append(next_line[i + 1])
-                input.append((v_in, v_out))
+                input.append((n, v_in, v_out))
         inputs.append(input)
     return inputs
 
@@ -28,6 +28,30 @@ def find_longest_path(input):
     n = input[0]  # number of edges
     v_in = input[1]  # for each vertex a list with all incoming edges
     v_out = input[2]  # for each vertex a list with all outgoing edges
+    v_deg = [len(v) for v in v_in]  # for each vertex a list with incoming deg
+    stack = list()
+    for i in range(0, len(v_deg)):
+        if v_deg[i] == 0:
+            stack.append(i)
+    ord = list()  # a topological order of the graph
+    while stack:
+        v = stack.pop()
+        ord.append(v)
+        for w in v_out[v]:
+            v_deg[w] -= 1
+            if v_deg[w] == 0:
+                stack.append(w)
+    if len(ord) != n:
+        print("Graph has a cycle!")
+        return False
+    # find the longest directed path by summing up the possible paths
+    longest_path = 0
+    to_add = [0 for i in ord]  # longest possible path before reaching vertex i
+    for i in range(0, len(ord)):
+        longest_path = max(longest_path, to_add[i])
+        for w in v_out[ord[i]]:
+            to_add[ord.index(w)] = max(to_add[ord.index(w)], to_add[i] + 1)
+    return longest_path + 1  # +1 because we reached the final vertex
 
 
 # path to the local test files
